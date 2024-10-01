@@ -48,6 +48,7 @@
 #include <vector>
 
 #include <cstdint>
+#include <cstring>
 
 #ifndef SFML_OPENGL_ES
 
@@ -125,48 +126,24 @@ bool getStreamContents(sf::InputStream& stream, std::vector<char>& buffer)
 // Transforms an array of 2D vectors into a contiguous array of scalars
 std::vector<float> flatten(const sf::Vector2f* vectorArray, std::size_t length)
 {
-    const std::size_t vectorSize = 2;
-
-    std::vector<float> contiguous(vectorSize * length);
-    for (std::size_t i = 0; i < length; ++i)
-    {
-        contiguous[vectorSize * i]     = vectorArray[i].x;
-        contiguous[vectorSize * i + 1] = vectorArray[i].y;
-    }
-
+    std::vector<float> contiguous(2 * length);
+    std::memcpy(contiguous.data(), vectorArray, sizeof(*vectorArray) * length);
     return contiguous;
 }
 
 // Transforms an array of 3D vectors into a contiguous array of scalars
 std::vector<float> flatten(const sf::Vector3f* vectorArray, std::size_t length)
 {
-    const std::size_t vectorSize = 3;
-
-    std::vector<float> contiguous(vectorSize * length);
-    for (std::size_t i = 0; i < length; ++i)
-    {
-        contiguous[vectorSize * i]     = vectorArray[i].x;
-        contiguous[vectorSize * i + 1] = vectorArray[i].y;
-        contiguous[vectorSize * i + 2] = vectorArray[i].z;
-    }
-
+    std::vector<float> contiguous(3 * length);
+    std::memcpy(contiguous.data(), vectorArray, sizeof(*vectorArray) * length);
     return contiguous;
 }
 
 // Transforms an array of 4D vectors into a contiguous array of scalars
 std::vector<float> flatten(const sf::Glsl::Vec4* vectorArray, std::size_t length)
 {
-    const std::size_t vectorSize = 4;
-
-    std::vector<float> contiguous(vectorSize * length);
-    for (std::size_t i = 0; i < length; ++i)
-    {
-        contiguous[vectorSize * i]     = vectorArray[i].x;
-        contiguous[vectorSize * i + 1] = vectorArray[i].y;
-        contiguous[vectorSize * i + 2] = vectorArray[i].z;
-        contiguous[vectorSize * i + 3] = vectorArray[i].w;
-    }
-
+    std::vector<float> contiguous(4 * length);
+    std::memcpy(contiguous.data(), vectorArray, sizeof(*vectorArray) * length);
     return contiguous;
 }
 } // namespace
