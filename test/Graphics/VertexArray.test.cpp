@@ -13,6 +13,7 @@ TEST_CASE("[Graphics] sf::VertexArray")
         STATIC_CHECK(std::is_copy_assignable_v<sf::VertexArray>);
         STATIC_CHECK(std::is_nothrow_move_constructible_v<sf::VertexArray>);
         STATIC_CHECK(std::is_nothrow_move_assignable_v<sf::VertexArray>);
+        STATIC_CHECK(!std::is_convertible_v<sf::VertexArray, std::vector<sf::Vertex>>);
     }
 
     SECTION("Construction")

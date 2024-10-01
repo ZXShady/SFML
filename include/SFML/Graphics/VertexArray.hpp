@@ -48,7 +48,7 @@ class RenderTarget;
 /// \brief Set of one or more 2D primitives
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API VertexArray : public Drawable
+class SFML_GRAPHICS_API VertexArray : public Drawable, protected std::vector<Vertex>
 {
 public:
     ////////////////////////////////////////////////////////////
@@ -76,62 +76,9 @@ public:
     ////////////////////////////////////////////////////////////
     [[nodiscard]] std::size_t getVertexCount() const;
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Get a read-write access to a vertex by its index
-    ///
-    /// This function doesn't check \a `index`, it must be in range
-    /// [0, `getVertexCount()` - 1]. The behavior is undefined
-    /// otherwise.
-    ///
-    /// \param index Index of the vertex to get
-    ///
-    /// \return Reference to the index-th vertex
-    ///
-    /// \see `getVertexCount`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] Vertex& operator[](std::size_t index);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Get a read-only access to a vertex by its index
-    ///
-    /// This function doesn't check \a `index`, it must be in range
-    /// [0, `getVertexCount()` - 1]. The behavior is undefined
-    /// otherwise.
-    ///
-    /// \param index Index of the vertex to get
-    ///
-    /// \return Const reference to the index-th vertex
-    ///
-    /// \see `getVertexCount`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] const Vertex& operator[](std::size_t index) const;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Clear the vertex array
-    ///
-    /// This function removes all the vertices from the array.
-    /// It doesn't deallocate the corresponding memory, so that
-    /// adding new vertices after clearing doesn't involve
-    /// reallocating all the memory.
-    ///
-    ////////////////////////////////////////////////////////////
-    void clear();
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Resize the vertex array
-    ///
-    /// If \a `vertexCount` is greater than the current size, the previous
-    /// vertices are kept and new (default-constructed) vertices are
-    /// added.
-    /// If \a `vertexCount` is less than the current size, existing vertices
-    /// are removed from the array.
-    ///
-    /// \param vertexCount New size of the array (number of vertices)
-    ///
-    ////////////////////////////////////////////////////////////
-    void resize(std::size_t vertexCount);
+    using std::vector<Vertex>::operator[];
+    using std::vector<Vertex>::clear;
+    using std::vector<Vertex>::resize;
 
     ////////////////////////////////////////////////////////////
     /// \brief Add a vertex to the array
@@ -188,8 +135,7 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    std::vector<Vertex> m_vertices;                             //!< Vertices contained in the array
-    PrimitiveType       m_primitiveType{PrimitiveType::Points}; //!< Type of primitives to draw
+    PrimitiveType m_primitiveType{PrimitiveType::Points}; //!< Type of primitives to draw
 };
 
 } // namespace sf

@@ -34,7 +34,9 @@
 namespace sf
 {
 ////////////////////////////////////////////////////////////
-VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : m_vertices(vertexCount), m_primitiveType(type)
+VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) :
+std::vector<Vertex>(vertexCount),
+m_primitiveType(type)
 {
 }
 
@@ -42,44 +44,13 @@ VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : m_vertic
 ////////////////////////////////////////////////////////////
 std::size_t VertexArray::getVertexCount() const
 {
-    return m_vertices.size();
+    return size();
 }
-
-
-////////////////////////////////////////////////////////////
-Vertex& VertexArray::operator[](std::size_t index)
-{
-    assert(index < m_vertices.size() && "Index is out of bounds");
-    return m_vertices[index];
-}
-
-
-////////////////////////////////////////////////////////////
-const Vertex& VertexArray::operator[](std::size_t index) const
-{
-    assert(index < m_vertices.size() && "Index is out of bounds");
-    return m_vertices[index];
-}
-
-
-////////////////////////////////////////////////////////////
-void VertexArray::clear()
-{
-    m_vertices.clear();
-}
-
-
-////////////////////////////////////////////////////////////
-void VertexArray::resize(std::size_t vertexCount)
-{
-    m_vertices.resize(vertexCount);
-}
-
 
 ////////////////////////////////////////////////////////////
 void VertexArray::append(const Vertex& vertex)
 {
-    m_vertices.push_back(vertex);
+    push_back(vertex);
 }
 
 
@@ -100,16 +71,16 @@ PrimitiveType VertexArray::getPrimitiveType() const
 ////////////////////////////////////////////////////////////
 FloatRect VertexArray::getBounds() const
 {
-    if (!m_vertices.empty())
+    if (!empty())
     {
-        float left   = m_vertices[0].position.x;
-        float top    = m_vertices[0].position.y;
-        float right  = m_vertices[0].position.x;
-        float bottom = m_vertices[0].position.y;
+        float left   = (*this)[0].position.x;
+        float top    = (*this)[0].position.y;
+        float right  = (*this)[0].position.x;
+        float bottom = (*this)[0].position.y;
 
-        for (std::size_t i = 1; i < m_vertices.size(); ++i)
+        for (std::size_t i = 1; i < size(); ++i)
         {
-            const Vector2f position = m_vertices[i].position;
+            const Vector2f position = (*this)[i].position;
 
             // Update left and right
             if (position.x < left)
@@ -135,8 +106,8 @@ FloatRect VertexArray::getBounds() const
 ////////////////////////////////////////////////////////////
 void VertexArray::draw(RenderTarget& target, RenderStates states) const
 {
-    if (!m_vertices.empty())
-        target.draw(m_vertices.data(), m_vertices.size(), m_primitiveType, states);
+    if (!empty())
+        target.draw(data(), size(), m_primitiveType, states);
 }
 
 } // namespace sf
