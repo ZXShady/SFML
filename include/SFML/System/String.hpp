@@ -85,7 +85,7 @@ using U8String = std::basic_string<std::uint8_t, U8StringCharTraits>;
 ///        conversions between types and encodings
 ///
 ////////////////////////////////////////////////////////////
-class SFML_SYSTEM_API String
+class SFML_SYSTEM_API String : protected std::u32string
 {
 public:
     ////////////////////////////////////////////////////////////
@@ -353,41 +353,9 @@ public:
     ////////////////////////////////////////////////////////////
     String& operator+=(const String& right);
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Overload of `operator[]` to access a character by its position
-    ///
-    /// This function provides read-only access to characters.
-    /// Note: the behavior is undefined if \a `index` is out of range.
-    ///
-    /// \param index Index of the character to get
-    ///
-    /// \return Character at position \a `index`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] char32_t operator[](std::size_t index) const;
+    using std::u32string::operator[];
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Overload of `operator[]` to access a character by its position
-    ///
-    /// This function provides read and write access to characters.
-    /// Note: the behavior is undefined if \a `index` is out of range.
-    ///
-    /// \param index Index of the character to get
-    ///
-    /// \return Reference to the character at position \a `index`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] char32_t& operator[](std::size_t index);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Clear the string
-    ///
-    /// This function removes all the characters from the string.
-    ///
-    /// \see `isEmpty`, `erase`
-    ///
-    ////////////////////////////////////////////////////////////
-    void clear();
+    using std::u32string::clear;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the size of the string
@@ -503,62 +471,12 @@ public:
     ////////////////////////////////////////////////////////////
     [[nodiscard]] const char32_t* getData() const;
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Return an iterator to the beginning of the string
-    ///
-    /// \return Read-write iterator to the beginning of the string characters
-    ///
-    /// \see `end`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] Iterator begin();
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Return an iterator to the beginning of the string
-    ///
-    /// \return Read-only iterator to the beginning of the string characters
-    ///
-    /// \see `end`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] ConstIterator begin() const;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Return an iterator to the end of the string
-    ///
-    /// The end iterator refers to 1 position past the last character;
-    /// thus it represents an invalid character and should never be
-    /// accessed.
-    ///
-    /// \return Read-write iterator to the end of the string characters
-    ///
-    /// \see `begin`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] Iterator end();
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Return an iterator to the end of the string
-    ///
-    /// The end iterator refers to 1 position past the last character;
-    /// thus it represents an invalid character and should never be
-    /// accessed.
-    ///
-    /// \return Read-only iterator to the end of the string characters
-    ///
-    /// \see `begin`
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] ConstIterator end() const;
+    using std::u32string::begin;
+    using std::u32string::end;
 
 private:
     friend SFML_SYSTEM_API bool operator==(const String& left, const String& right);
     friend SFML_SYSTEM_API bool operator<(const String& left, const String& right);
-
-    ////////////////////////////////////////////////////////////
-    // Member data
-    ////////////////////////////////////////////////////////////
-    std::u32string m_string; //!< Internal string of UTF-32 characters
 };
 
 ////////////////////////////////////////////////////////////

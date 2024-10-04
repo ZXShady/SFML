@@ -143,21 +143,21 @@ U8StringCharTraits::int_type U8StringCharTraits::not_eof(int_type i) noexcept
 ////////////////////////////////////////////////////////////
 String::String(char ansiChar, const std::locale& locale)
 {
-    m_string += Utf32::decodeAnsi(ansiChar, locale);
+    *this += static_cast<char32_t>(Utf32::decodeAnsi(ansiChar, locale));
 }
 
 
 ////////////////////////////////////////////////////////////
 String::String(wchar_t wideChar)
 {
-    m_string += Utf32::decodeWide(wideChar);
+    *this += static_cast<char32_t>(Utf32::decodeWide(wideChar));
 }
 
 
 ////////////////////////////////////////////////////////////
 String::String(char32_t utf32Char)
 {
-    m_string += utf32Char;
+    *this += utf32Char;
 }
 
 
@@ -169,8 +169,8 @@ String::String(const char* ansiString, const std::locale& locale)
         const std::size_t length = std::strlen(ansiString);
         if (length > 0)
         {
-            m_string.reserve(length + 1);
-            Utf32::fromAnsi(ansiString, ansiString + length, std::back_inserter(m_string), locale);
+            reserve(length + 1);
+            Utf32::fromAnsi(ansiString, ansiString + length, std::back_inserter(static_cast<std::u32string&>(*this)), locale);
         }
     }
 }
@@ -179,8 +179,8 @@ String::String(const char* ansiString, const std::locale& locale)
 ////////////////////////////////////////////////////////////
 String::String(const std::string& ansiString, const std::locale& locale)
 {
-    m_string.reserve(ansiString.length() + 1);
-    Utf32::fromAnsi(ansiString.begin(), ansiString.end(), std::back_inserter(m_string), locale);
+    reserve(ansiString.length() + 1);
+    Utf32::fromAnsi(ansiString.begin(), ansiString.end(), std::back_inserter(static_cast<std::u32string&>(*this)), locale);
 }
 
 
@@ -192,8 +192,8 @@ String::String(const wchar_t* wideString)
         const std::size_t length = std::wcslen(wideString);
         if (length > 0)
         {
-            m_string.reserve(length + 1);
-            Utf32::fromWide(wideString, wideString + length, std::back_inserter(m_string));
+            reserve(length + 1);
+            Utf32::fromWide(wideString, wideString + length, std::back_inserter(static_cast<std::u32string&>(*this)));
         }
     }
 }
@@ -202,8 +202,8 @@ String::String(const wchar_t* wideString)
 ////////////////////////////////////////////////////////////
 String::String(const std::wstring& wideString)
 {
-    m_string.reserve(wideString.length() + 1);
-    Utf32::fromWide(wideString.begin(), wideString.end(), std::back_inserter(m_string));
+    reserve(wideString.length() + 1);
+    Utf32::fromWide(wideString.begin(), wideString.end(), std::back_inserter(static_cast<std::u32string&>(*this)));
 }
 
 
@@ -211,12 +211,12 @@ String::String(const std::wstring& wideString)
 String::String(const char32_t* utf32String)
 {
     if (utf32String)
-        m_string = utf32String;
+        *this = utf32String;
 }
 
 
 ////////////////////////////////////////////////////////////
-String::String(std::u32string utf32String) : m_string(std::move(utf32String))
+String::String(std::u32string utf32String) : std::u32string(std::move(utf32String))
 {
 }
 
@@ -240,10 +240,10 @@ std::string String::toAnsiString(const std::locale& locale) const
 {
     // Prepare the output string
     std::string output;
-    output.reserve(m_string.length() + 1);
+    output.reserve(length() + 1);
 
     // Convert
-    Utf32::toAnsi(m_string.begin(), m_string.end(), std::back_inserter(output), 0, locale);
+    Utf32::toAnsi(begin(), end(), std::back_inserter(output), 0, locale);
 
     return output;
 }
@@ -254,10 +254,10 @@ std::wstring String::toWideString() const
 {
     // Prepare the output string
     std::wstring output;
-    output.reserve(m_string.length() + 1);
+    output.reserve(length() + 1);
 
     // Convert
-    Utf32::toWide(m_string.begin(), m_string.end(), std::back_inserter(output), 0);
+    Utf32::toWide(begin(), end(), std::back_inserter(output), 0);
 
     return output;
 }
@@ -268,10 +268,10 @@ U8String String::toUtf8() const
 {
     // Prepare the output string
     U8String output;
-    output.reserve(m_string.length());
+    output.reserve(length());
 
     // Convert
-    Utf32::toUtf8(m_string.begin(), m_string.end(), std::back_inserter(output));
+    Utf32::toUtf8(begin(), end(), std::back_inserter(output));
 
     return output;
 }
@@ -282,10 +282,10 @@ std::u16string String::toUtf16() const
 {
     // Prepare the output string
     std::u16string output;
-    output.reserve(m_string.length());
+    output.reserve(length());
 
     // Convert
-    Utf32::toUtf16(m_string.begin(), m_string.end(), std::back_inserter(output));
+    Utf32::toUtf16(begin(), end(), std::back_inserter(output));
 
     return output;
 }
@@ -294,80 +294,57 @@ std::u16string String::toUtf16() const
 ////////////////////////////////////////////////////////////
 std::u32string String::toUtf32() const
 {
-    return m_string;
+    return *this;
 }
 
 
 ////////////////////////////////////////////////////////////
 String& String::operator+=(const String& right)
 {
-    m_string += right.m_string;
+    *this += static_cast<const std::u32string&>(right);
     return *this;
-}
-
-
-////////////////////////////////////////////////////////////
-char32_t String::operator[](std::size_t index) const
-{
-    assert(index < m_string.size() && "Index is out of bounds");
-    return m_string[index];
-}
-
-
-////////////////////////////////////////////////////////////
-char32_t& String::operator[](std::size_t index)
-{
-    assert(index < m_string.size() && "Index is out of bounds");
-    return m_string[index];
-}
-
-
-////////////////////////////////////////////////////////////
-void String::clear()
-{
-    m_string.clear();
 }
 
 
 ////////////////////////////////////////////////////////////
 std::size_t String::getSize() const
 {
-    return m_string.size();
+    return size();
 }
 
 
 ////////////////////////////////////////////////////////////
 bool String::isEmpty() const
 {
-    return m_string.empty();
+    return empty();
 }
 
 
 ////////////////////////////////////////////////////////////
 void String::erase(std::size_t position, std::size_t count)
 {
-    m_string.erase(position, count);
+    std::u32string::erase(position, count);
 }
 
 
 ////////////////////////////////////////////////////////////
 void String::insert(std::size_t position, const String& str)
 {
-    m_string.insert(position, str.m_string);
+    std::u32string::insert(position, str);
 }
 
 
 ////////////////////////////////////////////////////////////
 std::size_t String::find(const String& str, std::size_t start) const
 {
-    return m_string.find(str.m_string, start);
+    return std::u32string::find(str, start);
 }
 
 
 ////////////////////////////////////////////////////////////
 void String::replace(std::size_t position, std::size_t length, const String& replaceWith)
 {
-    m_string.replace(position, length, replaceWith.m_string);
+    std::u32string::replace(position, length, replaceWith);
 }
 
 
@@ -390,49 +367,20 @@ void String::replace(const String& searchFor, const String& replaceWith)
 ////////////////////////////////////////////////////////////
 String String::substring(std::size_t position, std::size_t length) const
 {
-    return m_string.substr(position, length);
+    return substr(position, length);
 }
 
 
 ////////////////////////////////////////////////////////////
 const char32_t* String::getData() const
 {
-    return m_string.c_str();
+    return c_str();
 }
-
-
-////////////////////////////////////////////////////////////
-String::Iterator String::begin()
-{
-    return m_string.begin();
-}
-
-
-////////////////////////////////////////////////////////////
-String::ConstIterator String::begin() const
-{
-    return m_string.begin();
-}
-
-
-////////////////////////////////////////////////////////////
-String::Iterator String::end()
-{
-    return m_string.end();
-}
-
-
-////////////////////////////////////////////////////////////
-String::ConstIterator String::end() const
-{
-    return m_string.end();
-}
-
 
 ////////////////////////////////////////////////////////////
 bool operator==(const String& left, const String& right)
 {
-    return left.m_string == right.m_string;
+    return static_cast<const std::u32string&>(left) == static_cast<const std::u32string&>(right);
 }
 
 
@@ -446,7 +394,7 @@ bool operator!=(const String& left, const String& right)
 ////////////////////////////////////////////////////////////
 bool operator<(const String& left, const String& right)
 {
-    return left.m_string < right.m_string;
+    return static_cast<const std::u32string&>(left) < static_cast<const std::u32string&>(right);
 }
 
 
