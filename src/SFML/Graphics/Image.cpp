@@ -141,11 +141,11 @@ void Image::resize(Vector2u size, Color color)
     if (size.x && size.y)
     {
         // Create a new pixel buffer first for exception safety's sake
-        std::vector<std::uint8_t> newPixels(static_cast<std::size_t>(size.x) * static_cast<std::size_t>(size.y) * 4);
+        m_pixels.resize(static_cast<std::size_t>(size.x) * static_cast<std::size_t>(size.y) * 4);
 
         // Fill it with the specified color
-        std::uint8_t* ptr = newPixels.data();
-        std::uint8_t* end = ptr + newPixels.size();
+        std::uint8_t* ptr = m_pixels.data();
+        std::uint8_t* end = ptr + m_pixels.size();
         while (ptr != end)
         {
             *ptr++ = color.r;
@@ -153,9 +153,6 @@ void Image::resize(Vector2u size, Color color)
             *ptr++ = color.b;
             *ptr++ = color.a;
         }
-
-        // Commit the new pixel buffer
-        m_pixels = std::move(newPixels);
 
         // Assign the new size
         m_size = size;
