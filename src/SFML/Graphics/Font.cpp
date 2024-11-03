@@ -534,7 +534,7 @@ Glyph Font::loadGlyph(std::uint32_t codePoint, unsigned int characterSize, bool 
         return glyph;
 
     // Apply bold and outline (there is no fallback for outline) if necessary -- first technique using outline (highest quality)
-    const FT_Pos weight  = 1 << 6;
+    constexpr FT_Pos weight  = 1 << 6;
     const bool   outline = (glyphDesc->format == FT_GLYPH_FORMAT_OUTLINE);
     if (outline)
     {
@@ -588,7 +588,7 @@ Glyph Font::loadGlyph(std::uint32_t codePoint, unsigned int characterSize, bool 
     {
         // Leave a small padding around characters, so that filtering doesn't
         // pollute them with pixels from neighbors
-        const unsigned int padding = 2;
+        constexpr unsigned int padding = 2;
 
         size += 2u * Vector2u(padding, padding);
 

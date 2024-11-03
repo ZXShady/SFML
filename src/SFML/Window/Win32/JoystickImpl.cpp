@@ -98,7 +98,7 @@ struct JoystickBlacklistEntry
 using JoystickBlacklist = std::vector<JoystickBlacklistEntry>;
 JoystickBlacklist joystickBlacklist;
 
-const DWORD directInputEventBufferSize = 32;
+constexpr DWORD directInputEventBufferSize = 32;
 } // namespace
 
 

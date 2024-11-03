@@ -261,20 +261,20 @@ void SoundFileWriterWav::writeHeader(unsigned int sampleRate, unsigned int chann
 
     if (channelCount > 2)
     {
-        const std::uint32_t fmtChunkSize = 40;
+        constexpr std::uint32_t fmtChunkSize = 40;
         encode(m_file, fmtChunkSize);
 
         // Write the format (Extensible)
-        const std::uint16_t format = 65534;
+        constexpr std::uint16_t format = 65534;
         encode(m_file, format);
     }
     else
     {
-        const std::uint32_t fmtChunkSize = 16;
+        constexpr std::uint32_t fmtChunkSize = 16;
         encode(m_file, fmtChunkSize);
 
         // Write the format (PCM)
-        const std::uint16_t format = 1;
+        constexpr std::uint16_t format = 1;
         encode(m_file, format);
     }
 
@@ -285,12 +285,12 @@ void SoundFileWriterWav::writeHeader(unsigned int sampleRate, unsigned int chann
     encode(m_file, byteRate);
     const auto blockAlign = static_cast<std::uint16_t>(channelCount * 2);
     encode(m_file, blockAlign);
-    const std::uint16_t bitsPerSample = 16;
+    constexpr std::uint16_t bitsPerSample = 16;
     encode(m_file, bitsPerSample);
 
     if (channelCount > 2)
     {
-        const std::uint16_t extensionSize = 16;
+        constexpr std::uint16_t extensionSize = 16;
         encode(m_file, extensionSize);
         encode(m_file, bitsPerSample);
         encode(m_file, channelMask);

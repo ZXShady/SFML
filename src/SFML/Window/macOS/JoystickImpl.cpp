@@ -472,8 +472,8 @@ JoystickState JoystickImpl::update()
         // of devices are so sensitive that this is not relevant.
         const auto   physicalMax   = static_cast<double>(IOHIDElementGetPhysicalMax(iohidElementRef));
         const auto   physicalMin   = static_cast<double>(IOHIDElementGetPhysicalMin(iohidElementRef));
-        const double scaledMin     = -100;
-        const double scaledMax     = 100;
+        constexpr double scaledMin     = -100;
+        constexpr double scaledMax     = 100;
         const double physicalValue = IOHIDValueGetScaledValue(value, kIOHIDValueScaleTypePhysical);
         const auto   scaledValue   = static_cast<float>(
             (((physicalValue - physicalMin) * (scaledMax - scaledMin)) / (physicalMax - physicalMin)) + scaledMin);

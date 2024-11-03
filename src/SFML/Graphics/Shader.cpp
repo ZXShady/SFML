@@ -124,7 +124,7 @@ bool getStreamContents(sf::InputStream& stream, std::vector<char>& buffer)
 // Transforms an array of 2D vectors into a contiguous array of scalars
 std::vector<float> flatten(const sf::Vector2f* vectorArray, std::size_t length)
 {
-    const std::size_t vectorSize = 2;
+    constexpr std::size_t vectorSize = 2;
 
     std::vector<float> contiguous(vectorSize * length);
     for (std::size_t i = 0; i < length; ++i)
@@ -139,7 +139,7 @@ std::vector<float> flatten(const sf::Vector2f* vectorArray, std::size_t length)
 // Transforms an array of 3D vectors into a contiguous array of scalars
 std::vector<float> flatten(const sf::Vector3f* vectorArray, std::size_t length)
 {
-    const std::size_t vectorSize = 3;
+    constexpr std::size_t vectorSize = 3;
 
     std::vector<float> contiguous(vectorSize * length);
     for (std::size_t i = 0; i < length; ++i)
@@ -155,7 +155,7 @@ std::vector<float> flatten(const sf::Vector3f* vectorArray, std::size_t length)
 // Transforms an array of 4D vectors into a contiguous array of scalars
 std::vector<float> flatten(const sf::Glsl::Vec4* vectorArray, std::size_t length)
 {
-    const std::size_t vectorSize = 4;
+    constexpr std::size_t vectorSize = 4;
 
     std::vector<float> contiguous(vectorSize * length);
     for (std::size_t i = 0; i < length; ++i)
