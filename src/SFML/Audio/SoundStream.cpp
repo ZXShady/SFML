@@ -202,7 +202,7 @@ struct SoundStream::Impl : priv::MiniaudioUtils::SoundBase
 
     static ma_result setLooping(ma_data_source* dataSource, ma_bool32 looping)
     {
-        static_cast<Impl*>(dataSource)->loop = (looping == MA_TRUE);
+        static_cast<Impl*>(dataSource)->loop = looping;
 
         return MA_SUCCESS;
     }
@@ -377,14 +377,14 @@ Time SoundStream::getPlayingOffset() const
 ////////////////////////////////////////////////////////////
 void SoundStream::setLooping(bool loop)
 {
-    ma_sound_set_looping(&m_impl->sound, loop ? MA_TRUE : MA_FALSE);
+    ma_sound_set_looping(&m_impl->sound, loop);
 }
 
 
 ////////////////////////////////////////////////////////////
 bool SoundStream::isLooping() const
 {
-    return ma_sound_is_looping(&m_impl->sound) == MA_TRUE;
+    return ma_sound_is_looping(&m_impl->sound);
 }
 
 

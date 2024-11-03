@@ -33,6 +33,9 @@
 #include <ostream>
 
 
+static_assert(GL_TRUE == true);
+static_assert(GL_FALSE == false);
+
 namespace sf::priv
 {
 ////////////////////////////////////////////////////////////

@@ -31,3 +31,6 @@
 // #define MA_DEBUG_OUTPUT // Uncomment to enable miniaudio debug output to console
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
+
+static_assert(MA_TRUE == true);
+static_assert(MA_FALSE == false);

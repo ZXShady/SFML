@@ -248,7 +248,7 @@ std::vector<AudioDevice::DeviceEntry> AudioDevice::getAvailableDevices()
 
             // Make sure the default device is always placed at the front
             deviceList.emplace(deviceInfos[i].isDefault ? deviceList.begin() : deviceList.end(),
-                               DeviceEntry{name, deviceInfos[i].id, deviceInfos[i].isDefault == MA_TRUE});
+                               DeviceEntry{name, deviceInfos[i].id, deviceInfos[i].isDefault});
         }
 
         return deviceList;

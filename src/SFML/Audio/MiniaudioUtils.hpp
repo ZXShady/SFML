@@ -53,7 +53,7 @@ struct SavedSettings
     float          pitch{1.f};
     float          pan{0.f};
     float          volume{1.f};
-    ma_bool32      spatializationEnabled{MA_TRUE};
+    ma_bool32      spatializationEnabled{true};
     ma_vec3f       position{0.f, 0.f, 0.f};
     ma_vec3f       direction{0.f, 0.f, -1.f};
     float          directionalAttenuationFactor{1.f};

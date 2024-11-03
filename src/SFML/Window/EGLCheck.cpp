@@ -35,6 +35,9 @@
 #include <ostream>
 
 
+static_assert(EGL_TRUE == true);
+static_assert(EGL_FALSE == false);
+
 namespace sf::priv
 {
 ////////////////////////////////////////////////////////////

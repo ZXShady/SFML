@@ -398,7 +398,7 @@ int WglContext::selectBestPixelFormat(HDC deviceContext, unsigned int bitsPerPix
                         break;
                     }
 
-                    if (pbufferValue != GL_TRUE)
+                    if (!pbufferValue)
                         continue;
                 }
 
