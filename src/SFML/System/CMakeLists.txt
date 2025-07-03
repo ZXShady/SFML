@@ -21,7 +21,6 @@ set(SRC
     ${INCROOT}/Time.hpp
     ${INCROOT}/Time.inl
     ${INCROOT}/UniqueResource.hpp
-    ${INCROOT}/UniqueResource.inl
     ${INCROOT}/Utf.hpp
     ${INCROOT}/Utf.inl
     ${SRCROOT}/Utils.hpp

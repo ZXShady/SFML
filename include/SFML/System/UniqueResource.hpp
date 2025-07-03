@@ -27,134 +27,56 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <memory>
 #include <type_traits>
 #include <utility>
 
-
 namespace sf
 {
-////////////////////////////////////////////////////////////
-/// \brief Class template for storing noncopyable resource handles
-///
-////////////////////////////////////////////////////////////
-template <typename Handle, typename Deleter>
-class UniqueResource
+
+template <typename T, typename Deleter>
+struct DeleterWrapper : Deleter
 {
-    static_assert(!std::is_pointer_v<Handle>, "Handle cannot be a pointer");
-    static_assert(!std::is_const_v<Handle>, "Handle cannot be const");
-    static_assert(std::is_trivially_constructible_v<Handle>, "Handle must be trivially constructible");
-    static_assert(std::is_trivially_destructible_v<Handle>, "Handle must be trivially destructible");
-    static_assert(std::is_invocable_v<Deleter, Handle>, "Deleter must define operator()(Handle)");
-
-public:
-    ////////////////////////////////////////////////////////////
-    /// \brief Construct from handle
-    ///
-    /// \param handle Handle to the resource
-    ///
-    ////////////////////////////////////////////////////////////
-    explicit UniqueResource(Handle handle = {});
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Delete the resource
-    ///
-    ////////////////////////////////////////////////////////////
-    ~UniqueResource();
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Deleted copy constructor
-    ///
-    ////////////////////////////////////////////////////////////
-    UniqueResource(const UniqueResource&) = delete;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Deleted copy assignment
-    ///
-    ////////////////////////////////////////////////////////////
-    UniqueResource& operator=(const UniqueResource&) = delete;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Move constructor
-    ///
-    ////////////////////////////////////////////////////////////
-    UniqueResource(UniqueResource&& other) noexcept;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Move assignment
-    ///
-    ////////////////////////////////////////////////////////////
-    UniqueResource& operator=(UniqueResource&& other) noexcept;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Release ownership of the managed resource
-    ///
-    ////////////////////////////////////////////////////////////
-    void release();
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Delete the resource and assign new handle
-    ///
-    ////////////////////////////////////////////////////////////
-    void reset(Handle handle = {});
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Access the underlying handle
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] Handle get() const;
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Determine if resource has non-null handle
-    ///
-    /// \return True if handle is non-null
-    ///
-    ////////////////////////////////////////////////////////////
-    [[nodiscard]] operator bool() const;
-
-private:
-    Handle  m_handle{};  //!< Handle to the managed resource
-    Deleter m_deleter{}; //!< Functor to clean up resource
+    // NOLINTNEXTLINE(readability-identifier-naming)
+    struct pointer
+    {
+        template <typename... Args>
+        pointer(Args... args) : value(args...)
+        {
+        }
+        pointer(std::nullptr_t)
+        {
+        }
+        friend constexpr bool operator==(pointer a, pointer b)
+        {
+            return a.value == b.value;
+        }
+        friend constexpr bool operator!=(pointer a, pointer b)
+        {
+            return !(a == b);
+        }
+        operator const T&() const noexcept
+        {
+            return value;
+        }
+        T value{};
+    };
+    using Deleter::operator();
 };
 
-#include <SFML/System/UniqueResource.inl>
+template <typename Handle, typename Deleter>
+class UniqueResource : public std::unique_ptr<Handle, DeleterWrapper<Handle, Deleter>>
+{
+private:
+    using base = std::unique_ptr<Handle, DeleterWrapper<Handle, Deleter>>;
 
+public:
+    using base::base;
+    using base::operator bool;
+
+    auto get() const noexcept
+    {
+        return base::get().value;
+    }
+};
 } // namespace sf
-
-
-////////////////////////////////////////////////////////////
-/// \class sf::UniqueResource
-/// \ingroup system
-///
-/// This class provides a wrapper around a handle to a resource
-/// with a custom deleter that cleans up that resource at the
-/// end of its lifetime.
-///
-/// Like std::unique_ptr, sf::UniqueResource uses the default
-/// constructed state of the handle to represent the "null" state
-/// of the resource. Default construction of a unique resource
-/// or moving out of a unique resource entails the handle being
-/// reset to its default constructed state which typically means
-/// a value of 0.
-///
-/// Usage example:
-/// \code
-/// struct Deleter
-/// {
-///     void operator()(int) const
-///     {
-///         std::cout << "Cleanup\n";
-///     }
-/// };
-///
-/// sf::UniqueResource<int, Deleter> uniqueResource(42);
-/// useResource(uniqueResource.get());
-/// ...
-/// // When destructing, prints "Cleanup"
-/// \endcode
-///
-/// This type is not copyeable but is moveable. If you move
-/// from this type, the deleter will not be called on the
-/// moved-from instance. This ensures that the resource it
-/// owns will never be deleted twice.
-///
-////////////////////////////////////////////////////////////

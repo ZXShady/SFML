@@ -86,7 +86,7 @@ TEST_CASE("[System] sf::UniqueResource")
         const auto deleteCount = Deleter::count;
         {
             sf::UniqueResource<int, Deleter> uniqueResource(42);
-            uniqueResource.release();
+            (void)uniqueResource.release();
             CHECK(!uniqueResource);
             CHECK(uniqueResource.get() == 0);
             CHECK(Deleter::count == deleteCount);
