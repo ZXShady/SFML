@@ -8,9 +8,42 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules/")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
 
 # add the modules subdirectories
+# Create the codegen tool
+
+
+
+add_executable(sfml-codegen ${CMAKE_SOURCE_DIR}/codegen/inplace_pimpl_sizes.cpp)
+
+set(SIZEOF_HEADER ${CMAKE_BINARY_DIR}/include/SFML/Base/StdTypeSizes.hpp)
+
+add_custom_command(
+    OUTPUT ${SIZEOF_HEADER}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/include/SFML/Base
+    COMMAND $<TARGET_FILE:sfml-codegen> > ${SIZEOF_HEADER}
+    DEPENDS sfml-codegen
+    COMMENT "Generating StdTypeSizes.hpp using sfml-codegen"
+)
+
+add_custom_target(generate_stdtypesizes_header DEPENDS ${SIZEOF_HEADER})
+
+
+
 
 # sfml-system
 add_subdirectory(System)
+
+target_include_directories(sfml-system PUBLIC ${CMAKE_BINARY_DIR}/include)
+
+get_target_property(cxx_standard sfml-system CXX_STANDARD)
+if(cxx_standard)
+    set_target_properties(sfml-codegen PROPERTIES
+        CXX_STANDARD ${cxx_standard}
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF
+    )
+endif()
+
+add_dependencies(sfml-system generate_stdtypesizes_header)
 
 # sfml-main
 if(SFML_OS_WINDOWS OR SFML_OS_ANDROID OR SFML_OS_IOS)
